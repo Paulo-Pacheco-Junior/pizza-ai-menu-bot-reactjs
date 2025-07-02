@@ -12,9 +12,16 @@ export interface Message {
 }
 
 export default function App() {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      sender: "bot",
+      content:
+        "Olá! 👋 Bem-vindo à Pizzaria Forno a Lenha! Como posso te ajudar hoje?",
+    },
+  ]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -46,10 +53,10 @@ export default function App() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg flex flex-col h-[90vh] overflow-hidden border border-gray-200">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg flex flex-col max-h-[95dvh] h-full overflow-hidden border border-gray-200">
         <ChatHeader />
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-[360px]">
           {messages.map((msg, i) => (
             <ChatMessage key={i} msg={msg} />
           ))}
