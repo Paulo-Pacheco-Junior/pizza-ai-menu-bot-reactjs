@@ -5,7 +5,25 @@ import { ChatHeader } from "./components/ChatHeader";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
 
-const socket = io("https://pizza-ai-menu-bot-nodejs.onrender.com");
+const SERVER_URL = "https://pizza-ai-menu-bot-nodejs.onrender.com";
+//const SERVER_URL = "http://localhost:3333";
+
+function getOrCreateSessionId(): string {
+  const STORAGE_KEY = "pizza_bot_session_id";
+  let sessionId = localStorage.getItem(STORAGE_KEY);
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(STORAGE_KEY, sessionId);
+  }
+  return sessionId;
+}
+
+const sessionId = getOrCreateSessionId();
+
+const socket = io(SERVER_URL, {
+  auth: { sessionId },
+});
+
 export interface Message {
   sender: "user" | "bot";
   content: string;
@@ -27,7 +45,7 @@ export default function App() {
     socket.on("connect", () => {
       console.log("Conectado:", socket.id);
     });
-
+    
     socket.on("response", (msg: string) => {
       setMessages((prev) => [...prev, { sender: "bot", content: msg }]);
     });
@@ -44,10 +62,9 @@ export default function App() {
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    socket.emit("message", input);
+    socket.emit("message", { content: input, sessionId });
 
     setMessages((prev) => [...prev, { sender: "user", content: input }]);
-
     setInput("");
   };
 
