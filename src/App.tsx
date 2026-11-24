@@ -45,12 +45,27 @@ export default function App() {
     socket.on("connect", () => {
       console.log("Conectado:", socket.id);
     });
+
+    socket.on(
+      "history",
+      (history: { sender: "user" | "bot"; content: string }[]) => {
+        if (history && history.length > 0) {
+          setMessages(
+            history.map((h) => ({
+              sender: h.sender,
+              content: h.content,
+            }))
+          );
+        }
+      }
+    );
     
     socket.on("response", (msg: string) => {
       setMessages((prev) => [...prev, { sender: "bot", content: msg }]);
     });
 
     return () => {
+      socket.off("history");
       socket.off("response");
     };
   }, []);
