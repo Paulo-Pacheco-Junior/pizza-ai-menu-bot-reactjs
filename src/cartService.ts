@@ -1,6 +1,13 @@
 import { getOrCreateSessionId } from "./session";
 import { API_URL } from "./config";
 
+export interface Cart {
+  items: Array<{
+    id: string;
+    quantity: number;
+  }>;
+}
+
 function getHeaders(): HeadersInit {
   return {
     "Content-Type": "application/json",
@@ -8,12 +15,12 @@ function getHeaders(): HeadersInit {
   };
 }
 
-export async function fetchCart() {
+export async function fetchCart(): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart`, {
     headers: getHeaders(),
   });
-  if (!res.ok) throw new Error("Erro ao buscar carrinho");
-  return res.json();
+  if (!res.ok) throw new Error("Não foi possível carregar o carrinho.");
+  return res.json() as Promise<Cart>;
 }
 
 export async function addItemToCart(item: {
@@ -29,7 +36,7 @@ export async function addItemToCart(item: {
     headers: getHeaders(),
     body: JSON.stringify(item),
   });
-  if (!res.ok) throw new Error("Erro ao adicionar item ao carrinho");
+  if (!res.ok) throw new Error("Não foi possível adicionar o item ao carrinho.");
   return res.json();
 }
 
