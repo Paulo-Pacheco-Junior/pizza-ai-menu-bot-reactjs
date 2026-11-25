@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { getOrCreateSessionId } from "../session";
 
 export interface Message {
   sender: "user" | "bot";
@@ -7,16 +8,6 @@ export interface Message {
 }
 
 const RESPONSE_TIMEOUT_MS = 30_000;
-
-function getOrCreateSessionId(): string {
-  const STORAGE_KEY = "pizza_bot_session_id";
-  let sessionId = localStorage.getItem(STORAGE_KEY);
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    localStorage.setItem(STORAGE_KEY, sessionId);
-  }
-  return sessionId;
-}
 
 const sessionId = getOrCreateSessionId();
 

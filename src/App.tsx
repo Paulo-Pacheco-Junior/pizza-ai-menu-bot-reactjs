@@ -4,9 +4,7 @@ import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
 import { PizzaLogo } from "./components/PizzaLogo";
 import { useChatSocket } from "./hooks/useChatSocket";
-
-const SERVER_URL = "https://pizza-ai-menu-bot-nodejs.onrender.com";
-//const SERVER_URL = "http://localhost:3333";
+import { API_URL } from "./config";
 
 export default function App() {
   const [input, setInput] = useState("");
@@ -20,7 +18,7 @@ export default function App() {
     retryMessage,
     sendMessage,
     resetChat,
-  } = useChatSocket(SERVER_URL);
+  } = useChatSocket(API_URL);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
