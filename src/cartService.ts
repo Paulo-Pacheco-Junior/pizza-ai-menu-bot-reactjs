@@ -2,9 +2,24 @@ import { getOrCreateSessionId } from "./session";
 import { API_URL } from "./config";
 
 export interface Cart {
+  id: string;
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
   items: Array<{
     id: string;
     quantity: number;
+    size: string | null;
+    flavorHalf1: string | null;
+    flavorHalf2: string | null;
+    notes: string | null;
+    unitPrice: number;
+    totalPrice: number;
+    menuItem: {
+      id: number;
+      name: string;
+      type: "pizza" | "bebida" | "sobremesa";
+    };
   }>;
 }
 
@@ -30,24 +45,37 @@ export async function addItemToCart(item: {
   flavorHalf1?: string;
   flavorHalf2?: string;
   notes?: string;
-}) {
+}): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart/items`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(item),
   });
   if (!res.ok) throw new Error("Não foi possível adicionar o item ao carrinho.");
-  return res.json();
+  return res.json() as Promise<Cart>;
 }
 
-export async function removeItemFromCart(orderItemId: string) {
+export async function removeItemFromCart(orderItemId: string): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart/items`, {
     method: "DELETE",
     headers: getHeaders(),
     body: JSON.stringify({ orderItemId }),
   });
-  if (!res.ok) throw new Error("Erro ao remover item do carrinho");
-  return res.json();
+  if (!res.ok) throw new Error("Não foi possível remover o item do carrinho.");
+  return res.json() as Promise<Cart>;
+}
+
+export async function updateCartItemQuantity(
+  orderItemId: string,
+  quantity: number
+): Promise<Cart> {
+  const res = await fetch(`${API_URL}/cart/items/${encodeURIComponent(orderItemId)}`, {
+    method: "PUT",
+    headers: getHeaders(),
+    body: JSON.stringify({ quantity }),
+  });
+  if (!res.ok) throw new Error("Não foi possível atualizar a quantidade.");
+  return res.json() as Promise<Cart>;
 }
 
 export async function updateCartDelivery(data: {
